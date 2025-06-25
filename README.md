@@ -27,5 +27,5 @@ The table component is implemented in two ways:
    ```bash
    pnpm install
 
-Notes
+# Notes
 All scripts should be run with pnpm.
