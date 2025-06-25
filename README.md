@@ -27,5 +27,6 @@ The table component is implemented in two ways:
    ```bash
    pnpm install
 
-# Notes
-All scripts should be run with pnpm.
+# ✅ Notes
+- All scripts should be run **with `pnpm`**.
+- `pnpm-lock.yaml` serves the same purpose as `package-lock.json` in npm — it locks exact versions of dependencies to ensure consistent installs.
