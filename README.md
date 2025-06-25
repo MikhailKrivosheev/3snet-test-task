@@ -19,10 +19,12 @@ The table component is implemented in two ways:
 > Make sure you have the correct Node.js version installed — check the `.nvmrc` file.
 1. Use the correct Node.js version:
    ```bash
-   nvm use```
+   nvm use
 2. Install pnpm globally if you don’t have it:
+   ```bash
    npm install -g pnpm
-3. Install project dependencies:
+4. Install project dependencies:
+   ```bash
    pnpm install
 
 Notes
