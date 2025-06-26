@@ -1,7 +1,8 @@
 import cn from "classnames";
+import type { ITableData } from "../../../hooks/types";
 import { useActiveMonths } from "../../../store/useActiveMonths";
 import { getCurrencyAmount } from "../../../utils/getCurrencyAmount";
-import type { ITableCellProps, ITableProps } from "./types";
+import type { ITableCellProps } from "./types";
 
 const Cell = ({
   children,
@@ -17,7 +18,7 @@ const Cell = ({
   return <div className={cellClasses}>{children}</div>;
 };
 
-export default function GridTable({ total, table }: ITableProps) {
+export default function GridTable({ total, table }: ITableData) {
   const { months, getSlicedMonths } = useActiveMonths();
 
   const currentMonth = new Date().getMonth();

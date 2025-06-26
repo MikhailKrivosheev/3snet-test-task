@@ -8,7 +8,7 @@ export type TWithPlanAndFact<T = TPlanFact> = {
   fact: T;
 };
 
-type IMonthData = TPlanFact & TWithPlanAndFact
+type IMonthData = TPlanFact & TWithPlanAndFact;
 
 export interface ITableRow {
   id: number;
@@ -18,7 +18,12 @@ export interface ITableRow {
   year: number;
 }
 
-export interface IApiResponse {
+export interface ITableData {
   total: TWithPlanAndFact[];
   table: ITableRow[];
+}
+
+export interface IApiResponse {
+  success: boolean;
+  data: ITableData;
 }

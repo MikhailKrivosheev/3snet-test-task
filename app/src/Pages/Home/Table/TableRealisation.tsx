@@ -1,8 +1,8 @@
+import type { ITableData } from "../../../hooks/types";
 import { useActiveMonths } from "../../../store/useActiveMonths";
 import { getCurrencyAmount } from "../../../utils/getCurrencyAmount";
-import type { ITableProps } from "./types";
 
-export default function NativeTable({ total, table }: ITableProps) {
+export default function NativeTable({ total, table }: ITableData) {
   const { months, getSlicedMonths } = useActiveMonths();
 
   const currentMonth = new Date().getMonth();

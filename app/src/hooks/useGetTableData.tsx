@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import type { IApiResponse } from "./types";
+import type { IApiResponse, ITableData } from "./types";
 
 export const useGetTableData = () => {
-  const [data, setData] = useState<IApiResponse | null>(null);
+  const [data, setData] = useState<ITableData | null>(null);
   const [error, setError] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -13,9 +13,13 @@ export const useGetTableData = () => {
         setError(false);
 
         const response = await fetch("api/js_test/api.json");
-        const data = await response.json();
+        const data = (await response.json()) as IApiResponse;
 
-        setData(data.data);
+        if (data.success) {
+          setData(data.data);
+        } else {
+          setError(true);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
         setError(true);
