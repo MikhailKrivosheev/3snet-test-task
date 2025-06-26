@@ -1,4 +1,4 @@
-import type { ITableData } from "../../../hooks/types";
+import type { ITableData } from "../../../Hooks/TableData/types";
 import { useActiveMonths } from "../../../store/useActiveMonths";
 import { getCurrencyAmount } from "../../../utils/getCurrencyAmount";
 

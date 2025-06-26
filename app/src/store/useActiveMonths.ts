@@ -1,5 +1,5 @@
 import { create } from "zustand/index";
-import type { TWithPlanAndFact } from "../hooks/types";
+import type { TWithPlanAndFact } from "../Hooks/TableData/types";
 
 const MONTHS = [
   "January",
@@ -18,7 +18,7 @@ const MONTHS = [
 
 export interface MonthEntry {
   monthIndex: number;
-  name: typeof MONTHS[number];
+  name: (typeof MONTHS)[number];
 }
 
 export interface IActiveTabStore {

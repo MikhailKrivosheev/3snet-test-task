@@ -1,4 +1,4 @@
-import { useGetTableData } from "../../hooks/useGetTableData";
+import { useGetTableData } from "../../Hooks/TableData/useGetTableData";
 import GridTable from "./Table/GridRealisation";
 import NativeTable from "./Table/TableRealisation";
 
