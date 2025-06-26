@@ -1,8 +1,7 @@
 import cn from "classnames";
-import type { IApiResponse } from "../../../hooks/types";
 import { useActiveMonths } from "../../../store/useActiveMonths";
 import { getCurrencyAmount } from "../../../utils/getCurrencyAmount";
-import type { ITableCellProps } from "./types";
+import type { ITableCellProps, ITableProps } from "./types";
 
 const Cell = ({
   children,
@@ -18,7 +17,7 @@ const Cell = ({
   return <div className={cellClasses}>{children}</div>;
 };
 
-export default function GridTable({ total, table }: IApiResponse) {
+export default function GridTable({ total, table }: ITableProps) {
   const { months, getSlicedMonths } = useActiveMonths();
 
   const currentMonth = new Date().getMonth();
