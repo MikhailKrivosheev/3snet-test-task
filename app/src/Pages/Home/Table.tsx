@@ -1,31 +1,26 @@
-import { useEffect, useState } from "react";
+import { useGetTableData } from "../../hooks/useGetTableData";
 import GridTable from "./Table/GridRealisation";
 import NativeTable from "./Table/TableRealisation";
-import type { IApiResponse } from "./types";
 
 export default function Table() {
-  const [data, setData] = useState<IApiResponse | null>(null);
+  const { data, error, loading } = useGetTableData();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("api/js_test/api.json");
-        const data = await response.json();
-        setData(data.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-    fetchData();
-  }, []);
+  if (error) {
+    return <div>Не удалось загрузить данные</div>;
+  }
 
-  if (!data) return null;
+  if (!data) {
+    return <div>Данные не найдены</div>;
+  }
 
   return (
     <section className="flex flex-col gap-20">
-      <GridTable total={data?.total} table={data?.table} />
-      <NativeTable total={data?.total} table={data?.table} />
+      <GridTable {...data} />
+      <NativeTable {...data} />
     </section>
   );
 }

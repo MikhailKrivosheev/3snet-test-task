@@ -1,5 +1,5 @@
 import { create } from "zustand/index";
-import type { ITotalData } from "../Pages/Home/types";
+import type { TWithPlanAndFact } from "../hooks/types";
 
 const MONTHS = [
   "January",
@@ -14,18 +14,18 @@ const MONTHS = [
   "October",
   "November",
   "December",
-];
+] as const;
 
 export interface MonthEntry {
   monthIndex: number;
-  name: string;
+  name: typeof MONTHS[number];
 }
 
 export interface IActiveTabStore {
   months: MonthEntry[];
   setActiveMonths(months: MonthEntry[]): void;
   navigateMonths(direction: "next" | "prev"): void;
-  getSlicedMonths(monthsData: ITotalData[]): ITotalData[];
+  getSlicedMonths(monthsData: TWithPlanAndFact[]): TWithPlanAndFact[];
 }
 
 const getNextMonths = (start: number, count: number): MonthEntry[] => {
@@ -60,7 +60,7 @@ export const useActiveMonths = create<IActiveTabStore>((set, get) => ({
     set({ months: getNextMonths(newStart, 6) });
   },
 
-  getSlicedMonths: (monthsData: ITotalData[]) => {
+  getSlicedMonths: (monthsData: TWithPlanAndFact[]) => {
     const { months } = get();
     return monthsData.slice(
       months[0].monthIndex,

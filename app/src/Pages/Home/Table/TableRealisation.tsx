@@ -1,8 +1,8 @@
+import type { IApiResponse } from "../../../hooks/types";
 import { useActiveMonths } from "../../../store/useActiveMonths";
 import { getCurrencyAmount } from "../../../utils/getCurrencyAmount";
-import type { ITableRow, ITotalData } from "../types";
 
-export default function NativeTable({ total, table }: {total: ITotalData[], table: ITableRow[]}) {
+export default function NativeTable({ total, table }: IApiResponse) {
   const { months, getSlicedMonths } = useActiveMonths();
 
   const currentMonth = new Date().getMonth();
@@ -74,56 +74,50 @@ export default function NativeTable({ total, table }: {total: ITotalData[], tabl
             <td className="border border-gray-300 p-4 text-center">...</td>
           )}
         </tr>
-        {table.map(
-          ({ adminId, adminName, months: userMonths }, adminIndex) => (
-            <tr key={`admin-${adminId}-${adminIndex}`}>
-              <td className="text-bckg-blue border border-gray-300 p-4 text-base">
-                {adminName}
-              </td>
-              <td className="relative border border-gray-300 p-4 text-xs">
-                <div>Total income:</div>
-                <div className="my-2 border-t border-gray-300" />
-                <div>Total active partners:</div>
-              </td>
-              {getSlicedMonths(userMonths).map((userMonth, monthIndex) => {
-                const isFuture =
-                  months[monthIndex]?.monthIndex + 1 > currentMonth;
+        {table.map(({ adminId, adminName, months: userMonths }, adminIndex) => (
+          <tr key={`admin-${adminId}-${adminIndex}`}>
+            <td className="text-bckg-blue border border-gray-300 p-4 text-base">
+              {adminName}
+            </td>
+            <td className="relative border border-gray-300 p-4 text-xs">
+              <div>Total income:</div>
+              <div className="my-2 border-t border-gray-300" />
+              <div>Total active partners:</div>
+            </td>
+            {getSlicedMonths(userMonths).map((userMonth, monthIndex) => {
+              const isFuture =
+                months[monthIndex]?.monthIndex + 1 > currentMonth;
 
-                if (userMonth === null) {
-                  return (
-                    <td
-                      key={`admin-${adminId}-month-${monthIndex}-no-data`}
-                      className="text-text-secondary border border-gray-300 p-4 text-center text-xs"
-                    >
-                      No data
-                    </td>
-                  );
-                }
-
+              if (userMonth === null) {
                 return (
                   <td
-                    key={`admin-${adminId}-month-${monthIndex}`}
-                    className={`border border-gray-300 p-4 text-xs ${isFuture ? "text-black" : "text-text-secondary"}`}
+                    key={`admin-${adminId}-month-${monthIndex}-no-data`}
+                    className="text-text-secondary border border-gray-300 p-4 text-center text-xs"
                   >
-                    <div className="grid grid-cols-2 gap-x-2 gap-y-6">
-                      <span>
-                        {getCurrencyAmount(userMonth.plan.income ?? 0)}
-                      </span>
-                      <span>
-                        {getCurrencyAmount(userMonth.fact.income ?? 0)}
-                      </span>
-                      <span>{userMonth.plan.activePartners}</span>
-                      <span>{userMonth.fact.activePartners}</span>
-                    </div>
+                    No data
                   </td>
                 );
-              })}
-              {hasMoreMonths && (
-                <td className="border border-gray-300 p-4 text-center">...</td>
-              )}
-            </tr>
-          ),
-        )}
+              }
+
+              return (
+                <td
+                  key={`admin-${adminId}-month-${monthIndex}`}
+                  className={`border border-gray-300 p-4 text-xs ${isFuture ? "text-black" : "text-text-secondary"}`}
+                >
+                  <div className="grid grid-cols-2 gap-x-2 gap-y-6">
+                    <span>{getCurrencyAmount(userMonth.plan.income ?? 0)}</span>
+                    <span>{getCurrencyAmount(userMonth.fact.income ?? 0)}</span>
+                    <span>{userMonth.plan.activePartners}</span>
+                    <span>{userMonth.fact.activePartners}</span>
+                  </div>
+                </td>
+              );
+            })}
+            {hasMoreMonths && (
+              <td className="border border-gray-300 p-4 text-center">...</td>
+            )}
+          </tr>
+        ))}
       </tbody>
     </table>
   );
