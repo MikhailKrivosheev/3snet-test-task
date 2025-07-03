@@ -1,48 +1,42 @@
-import cn from "classnames";
-import type { ITableData } from "../../../Hooks/TableData/types";
-import { useActiveMonths } from "../../../store/useActiveMonths";
-import { getCurrencyAmount } from "../../../utils/getCurrencyAmount";
-import type { ITableCellProps } from "./types";
-
-const Cell = ({
-  children,
-  className,
-  isIndependent = false,
-  isActiveMonth = false,
-}: ITableCellProps) => {
-  const cellClasses = cn("cell-table", className, {
-    "cell-table--independent": isIndependent,
-    "cell-table--active-month": isActiveMonth,
-  });
-
-  return <div className={cellClasses}>{children}</div>;
-};
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useMemo } from "react";
+import type { ITableData } from "../../../../Hooks/TableData/types";
+import { MONTHS, useActiveMonths } from "../../../../store/useActiveMonths";
+import { getCurrencyAmount } from "../../../../utils/getCurrencyAmount";
+import Cell from "./Cell";
+import { tv } from "tailwind-variants";
 
 export default function GridTable({ total, table }: ITableData) {
   const { months, getSlicedMonths } = useActiveMonths();
 
+  const columnsCount = useMemo(() => months.length + 2, []);
+
   const currentMonth = new Date().getMonth();
 
-  const hasMoreMonths =
-    total && months.length > 0
-      ? months[months.length - 1].monthIndex < (total?.length - 1 || 0)
-      : false;
+  const hasMoreMonths = total
+    ? MONTHS.indexOf(months[months.length - 1]) < (total?.length - 1 || 0)
+    : false;
 
   if (!total && !table) return null;
 
   return (
-    <div className="grid-table">
-      <div className="row-table">
+    <div
+      className="grid h-full w-full"
+      style={{
+        gridTemplateColumns: `repeat(${columnsCount}, minmax(0, 1fr)) 50px`,
+      }}
+    >
+      <div className={rowTableClasses()}>
         <Cell className="bg-bckg-light" />
         <Cell className="bg-bckg-light" />
-        {months.map(({ monthIndex, name }) => (
-          <Cell key={monthIndex} className="bg-bckg-light text-sm">
+        {months.map((month) => (
+          <Cell key={MONTHS.indexOf(month)} className="bg-bckg-light text-sm">
             <span
-              className={`col-span-2 row-1 ${monthIndex + 1 > currentMonth ? "text-secondary-blue" : ""}`}
+              className={`col-span-2 row-1 ${MONTHS.indexOf(month) + 1 > currentMonth ? "text-secondary-blue" : ""}`}
             >
-              {name}
+              {month}
             </span>
-            <div className="cell-points">
+            <div className="col-span-full grid grid-cols-[subgrid] text-xs font-normal">
               <span>Plan</span>
               <span>Fact</span>
             </div>
@@ -50,7 +44,7 @@ export default function GridTable({ total, table }: ITableData) {
         ))}
         {hasMoreMonths && <Cell className="bg-bckg-light" />}
       </div>
-      <div className="row-table">
+      <div className={rowTableClasses()}>
         <Cell isIndependent className="text-secondary-blue text-sm">
           Manager
         </Cell>
@@ -62,9 +56,7 @@ export default function GridTable({ total, table }: ITableData) {
         {getSlicedMonths(total).map(({ plan, fact }, index) => (
           <Cell
             key={index}
-            isActiveMonth={
-              months[index] && months[index].monthIndex + 1 > currentMonth
-            }
+            isActiveMonth={MONTHS.indexOf(months[index]) + 1 > currentMonth}
             className="gap-y-8 text-xs"
           >
             <span>{getCurrencyAmount(plan.income)}</span>
@@ -76,7 +68,7 @@ export default function GridTable({ total, table }: ITableData) {
         {hasMoreMonths && <Cell isIndependent>...</Cell>}
       </div>
       {table.map(({ adminId, adminName, months: userMonths }, adminIndex) => (
-        <div key={`admin-${adminId}-${adminIndex}`} className="row-table">
+        <div key={`admin-${adminId}-${adminIndex}`} className={rowTableClasses()}>
           <Cell isIndependent className="text-bckg-blue text-base">
             {adminName}
           </Cell>
@@ -98,8 +90,7 @@ export default function GridTable({ total, table }: ITableData) {
               <Cell
                 key={`admin-${adminId}-month-${monthIndex}`}
                 isActiveMonth={
-                  months[monthIndex] &&
-                  months[monthIndex].monthIndex + 1 > currentMonth
+                  MONTHS.indexOf(months[monthIndex]) + 1 > currentMonth
                 }
                 className="gap-y-8 text-xs"
               >
@@ -116,3 +107,7 @@ export default function GridTable({ total, table }: ITableData) {
     </div>
   );
 }
+
+const rowTableClasses = tv({
+  base: "grid grid-cols-[subgrid] col-span-full",
+});

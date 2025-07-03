@@ -1,7 +1,7 @@
 import { create } from "zustand/index";
 import type { TWithPlanAndFact } from "../Hooks/TableData/types";
 
-const MONTHS = [
+export const MONTHS = [
   "January",
   "February",
   "March",
@@ -16,55 +16,74 @@ const MONTHS = [
   "December",
 ] as const;
 
-export interface MonthEntry {
-  monthIndex: number;
-  name: (typeof MONTHS)[number];
-}
-
+type Months = (typeof MONTHS)[number][];
 export interface IActiveTabStore {
-  months: MonthEntry[];
-  setActiveMonths(months: MonthEntry[]): void;
+  months: Months;
+  setActiveMonths(months: (typeof MONTHS)[number][]): void;
   navigateMonths(direction: "next" | "prev"): void;
   getSlicedMonths(monthsData: TWithPlanAndFact[]): TWithPlanAndFact[];
 }
 
-const getNextMonths = (start: number, count: number): MonthEntry[] => {
+/**
+ * Возвращает массив из `count` месяцев, начиная с текущего месяца.
+ * 
+ * 1. Если весь диапазон месяцев помещается в пределах текущего года,
+ *    возвращаются месяцы от текущего до (currentMonth + count - 1).
+ *
+ * 2. Если диапазон выходит за пределы декабря,
+ *    возвращаются последние `count` месяцев года.
+ */
+const getInitialMonths = (count: number): Months => {
+  const currentMonth = new Date().getMonth();
+
+  if (currentMonth + (count - 1) > 11) {
+    return Array.from({ length: count }, (_, i) => {
+      const monthIndex = 11 - (count - 1) + i;
+      return MONTHS[monthIndex];
+    });
+  }
+
   return Array.from({ length: count }, (_, i) => {
-    const monthIndex = (start + i) % 12;
-    return {
-      monthIndex,
-      name: MONTHS[monthIndex],
-    };
+    const monthIndex = currentMonth + i;
+    return MONTHS[monthIndex];
+  });
+};
+
+const getNextMonths = (start: number, count: number): Months => {
+  return Array.from({ length: count }, (_, i) => {
+    const monthIndex = start + i;
+    return MONTHS[monthIndex];
   });
 };
 
 export const useActiveMonths = create<IActiveTabStore>((set, get) => ({
-  months: getNextMonths(new Date().getMonth(), 6),
+  months: getInitialMonths(6),
 
-  setActiveMonths: (months) => set(() => ({ months })),
+  setActiveMonths: (months) => set({ months }),
 
   navigateMonths: (direction: "next" | "prev") => {
     const { months } = get();
-    const first = months[0].monthIndex;
+    const first = MONTHS.indexOf(months[0]);
 
     let newStart: number;
 
     if (direction === "next") {
       newStart = first + 1;
-      if (newStart + 5 > 11) return;
+      if (newStart + (months.length - 1) > 11) return;
     } else {
       newStart = first - 1;
       if (newStart < 0) return;
     }
 
-    set({ months: getNextMonths(newStart, 6) });
+    const newMonths = getNextMonths(newStart, months.length);
+    set({ months: newMonths });
   },
 
   getSlicedMonths: (monthsData: TWithPlanAndFact[]) => {
     const { months } = get();
     return monthsData.slice(
-      months[0].monthIndex,
-      months[months.length - 1].monthIndex + 1,
+      MONTHS.indexOf(months[0]),
+      MONTHS.indexOf(months[months.length - 1]) + 1,
     );
   },
 }));

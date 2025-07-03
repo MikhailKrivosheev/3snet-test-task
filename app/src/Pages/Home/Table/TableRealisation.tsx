@@ -1,5 +1,5 @@
 import type { ITableData } from "../../../Hooks/TableData/types";
-import { useActiveMonths } from "../../../store/useActiveMonths";
+import { MONTHS, useActiveMonths } from "../../../store/useActiveMonths";
 import { getCurrencyAmount } from "../../../utils/getCurrencyAmount";
 
 export default function NativeTable({ total, table }: ITableData) {
@@ -7,10 +7,9 @@ export default function NativeTable({ total, table }: ITableData) {
 
   const currentMonth = new Date().getMonth();
 
-  const hasMoreMonths =
-    total && months.length > 0
-      ? months[months.length - 1].monthIndex < (total?.length - 1 || 0)
-      : false;
+  const hasMoreMonths = total
+    ? MONTHS.indexOf(months[months.length - 1]) < (total?.length - 1 || 0)
+    : false;
 
   if (!total && !table) return null;
 
@@ -20,17 +19,19 @@ export default function NativeTable({ total, table }: ITableData) {
         <tr>
           <th className="bg-bckg-light text-text-secondary border border-gray-300 p-4 font-medium" />
           <th className="bg-bckg-light text-text-secondary border border-gray-300 p-4 font-medium" />
-          {months.map(({ monthIndex, name }) => (
+          {months.map((month) => (
             <th
-              key={monthIndex}
+              key={MONTHS.indexOf(month)}
               className="bg-bckg-light border border-gray-300 p-4 text-start"
             >
               <div
                 className={`mb-2 ${
-                  monthIndex + 1 > currentMonth ? "text-secondary-blue" : ""
+                  MONTHS.indexOf(month) + 1 > currentMonth
+                    ? "text-secondary-blue"
+                    : ""
                 }`}
               >
-                {name}
+                {month}
               </div>
               <div className="grid grid-cols-2 gap-x-2 gap-y-6">
                 <div>Plan</div>
@@ -57,7 +58,7 @@ export default function NativeTable({ total, table }: ITableData) {
             <td
               key={index}
               className={`border border-gray-300 p-4 text-xs ${
-                months[index]?.monthIndex + 1 > currentMonth
+                MONTHS.indexOf(months[index]) + 1 > currentMonth
                   ? "text-black"
                   : "text-text-secondary"
               }`}
@@ -85,8 +86,7 @@ export default function NativeTable({ total, table }: ITableData) {
               <div>Total active partners:</div>
             </td>
             {getSlicedMonths(userMonths).map((userMonth, monthIndex) => {
-              const isFuture =
-                months[monthIndex]?.monthIndex + 1 > currentMonth;
+              const isFuture = MONTHS.indexOf(months[monthIndex]) + 1 > currentMonth;
 
               if (userMonth === null) {
                 return (
